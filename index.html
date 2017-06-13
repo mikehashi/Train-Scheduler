@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Train Scheduler</title>
+
+	<script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+<!-- Jumbotron -->
+    <div class="jumbotron">
+      <h1 class="text-center">Train Scheduler</h1>
+    </div>
+
+
+<!-- current schedule display -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Current Train Schedule</h3>
+          </div>
+          <div class="panel-body" id="trainList">
+          	<div class="row">
+          		<div class="col-lg-2">
+          			<h4 id="name-display">Train Name</h4>
+          		</div>
+          		<div class="col-lg-2">
+          			<h4 id="dest-display">Destination</h4>
+          		</div>
+          		<div class="col-lg-2">
+          			<h4 id="frequency-display">Frequency (min)</h4>
+          		</div>
+          		<div class="col-lg-2">
+          			<h4 id="nextarrival-display">Next Arrival</p>
+          		</div>
+          		<div class="col-lg-2">
+          			<h4 id="minaway-display">Minutes Away</h4>	
+          		</div>         
+	       	</div>
+	       	<hr>
+          </div>
+        </div>
+      </div>
+
+    </div>
+<!-- needs to be to add row and p tags for each train wth hr line -->
+
+
+<!-- add train form -->
+     <div class="row">
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Add Train</h3>
+          </div>
+          <div class="panel-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="name-input">Train Name:</label>
+                <input class="form-control" id="name-input" type="text">
+              </div>
+              <div class="form-group">
+                <label for="dest-input">Destination:</label>
+                <input class="form-control" id="dest-input" type="text">
+              </div>
+              <div class="form-group">
+                <label for="firstTime-input">First Train Time (HH:mm - military time):</label>
+                <input class="form-control" id="firstTime-input" type="text">
+              </div>
+              <div class="form-group">
+                <label for="frequency-input">Frequency (min):</label>
+                <textarea class="form-control" id="frequency-input" type="number"></textarea>
+              </div>
+              <button class="btn btn-default" id="add-train" type="submit">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+  </div>
+
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+  <script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyB1nNodnIobFOXA8uL67P_zLVCk0Kip7gE",
+	    authDomain: "train-scheduler-84602.firebaseapp.com",
+	    databaseURL: "https://train-scheduler-84602.firebaseio.com",
+	    projectId: "train-scheduler-84602",
+	    storageBucket: "train-scheduler-84602.appspot.com",
+	    messagingSenderId: "2306237432"
+	  };
+	  firebase.initializeApp(config);
+
+	  var database = firebase.database();
+
+	  var trainName = "";
+	  var destination = "";
+	  var firstTime = "";
+	  var frequency = 0;
+
+	  var firstTimeConverted;
+	  var currentTime = moment();
+	  var diffTime;
+	  var tRemainder = diffTime % frequency;
+	  var tMinutesTillTrain = frequency - tRemainder;
+	  var nextTrain;
+
+
+	   $("#add-train").on("click", function() {
+      // Don't refresh the page!
+      event.preventDefault();
+
+  
+      trainName = $("#name-input").val().trim();
+      destination = $("#dest-input").val().trim();
+      firstTime = $("#firstTime-input").val().trim();
+      frequency = $("#frequency-input").val().trim();
+
+      firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+      console.log(firstTimeConverted);
+
+      diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+      console.log("Diff in time: " + diffTime);
+
+      console.log("min till train: " + tMinutesTillTrain);
+
+      nextTrain	= moment().add(tMinutesTillTrain, "minutes");
+
+      database.ref().push({
+        trainName: trainName,
+        destination: destination,
+        firstTime: firstTime,
+        frequency: frequency
+      });
+
+    });
+  	
+  </script>
+
+</body>
+</html>
