@@ -110,8 +110,8 @@
 	  var firstTimeConverted;
 	  var currentTime = moment();
 	  var diffTime;
-	  var tRemainder = diffTime % frequency;
-	  var tMinutesTillTrain = frequency - tRemainder;
+	  var tRemainder;
+	  var tMinutesTillTrain;
 	  var nextTrain;
 
 
@@ -131,6 +131,11 @@
       diffTime = moment().diff(moment(firstTimeConverted), "minutes");
       console.log("Diff in time: " + diffTime);
 
+      tRemainder = diffTime % frequency;
+      console.log(tRemainder);
+
+
+      tMinutesTillTrain = frequency - tRemainder;
       console.log("min till train: " + tMinutesTillTrain);
 
       nextTrain	= moment().add(tMinutesTillTrain, "minutes");
@@ -139,10 +144,29 @@
         trainName: trainName,
         destination: destination,
         firstTime: firstTime,
-        frequency: frequency
+        frequency: frequency,
+        nextTrain: nextTrain,
+        tMinutesTillTrain: tMinutesTillTrain
       });
 
+      $("#name-input").val("");
+      $("#dest-input").val("");
+      $("#firstTime-input").val("");
+      $("#frequency-input").val("");
+
     });
+
+database.ref().on("child_added", function(childSnapshot, prevChildKey) {
+
+  console.log(childSnapshot.val());
+
+  // Store everything into a variable.
+  // var tName = childSnapshot.val().name;
+  // var tDest = childSnapshot.val().role;
+  // var tfirstTime = childSnapshot.val().start;
+  // var empRate = childSnapshot.val().rate;
+
+});
   	
   </script>
 
